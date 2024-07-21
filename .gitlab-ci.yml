@@ -1,0 +1,4 @@
+stages:
+  - format
+  - lint
+  - scan
