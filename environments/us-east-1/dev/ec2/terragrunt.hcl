@@ -11,7 +11,7 @@ locals {
   region        = include.root.locals.region_vars.locals.aws_region
   environment   = include.root.locals.environment_vars.locals.environment
   instance_type = "t2.micro"
-  ami_id        = "ami-0b72821e2f351e396"
+  ami_id        = "ami-04a81a99f5ec58529"
 }
 
 dependency "vpc" {
@@ -38,25 +38,24 @@ dependency "security_group_ssh" {
   }
 }
 
-dependency "key_pair" {
-  config_path = "../key-pair"
-
-  mock_outputs = {
-    key_pair_name = "web-server-dev-key-pair"
-  }
-}
-
 inputs = {
   name          = "web-server-${local.environment}"
   instance_type = local.instance_type
 
+  vpc_security_group_ids      = [""]
   vpc_security_group_ids      = [dependency.security_group_web.outputs.security_group_id, dependency.security_group_ssh.outputs.security_group_id]
   subnet_id                   = dependency.vpc.outputs.public_subnets[0]
   ami                         = local.ami_id
   associate_public_ip_address = true
-  key_pair                    = dependency.key_pair.outputs.key_pair_name
+  key_name                    = "chris-key"
 
-  user_data = file("${get_terragrunt_dir()}/user-data.sh")
+  user_data = <<EOF
+  #!/bin/bash
+  sudo apt update -y
+  sudo apt install -y nginx
+  sudo systemctl start nginx
+  sudo systemctl enable nginx
+  EOF
 
   tags = {
     Environment = local.environment
