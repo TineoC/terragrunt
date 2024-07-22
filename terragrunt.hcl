@@ -2,9 +2,9 @@ locals {
   region_vars      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
-  remote_state_s3_bucket_name      = "chris-devopsdemo2024-terraform-state"
+  remote_state_s3_bucket_name      = "chris-devopsdemomultienv2024-terraform-state"
   remote_state_s3_bucket_region    = "us-east-1"
-  remote_state_dynamodb_table_name = "my-terraform-locks"
+  remote_state_dynamodb_table_name = "chris-terraform-locks"
 }
 
 remote_state {
@@ -12,7 +12,7 @@ remote_state {
 
   config = {
     encrypt        = true
-    region         = local.region_vars.locals.aws_region
+    region         = local.region_vars.locals.region
     bucket         = local.remote_state_s3_bucket_name
     key            = "${path_relative_to_include()}/terraform.tfstate"
     dynamodb_table = local.remote_state_dynamodb_table_name
@@ -29,7 +29,7 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
   provider "aws" {
-    region = "${local.region_vars.locals.aws_region}"
+    region = "${local.region_vars.locals.region}"
   }
   EOF
 }
@@ -49,7 +49,6 @@ generate "provider_version" {
 EOF
 }
 
-// generate output for S3 bucket name and region
 generate "s3_bucket_output" {
   path      = "s3_bucket_output.tf"
   if_exists = "overwrite_terragrunt"

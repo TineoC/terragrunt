@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Configuration
-S3_BUCKET_NAME="chris-devopsdemo2024-terraform-state"
+S3_BUCKET_NAME="chris-devopsdemomultienv2024-terraform-state"
 S3_BUCKET_REGION="us-east-1"
-DYNAMODB_TABLE_NAME="my-terraform-locks"
+DYNAMODB_TABLE_NAME="chris-terraform-locks"
 
 # Function to create resources
 create_resources() {
